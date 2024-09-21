@@ -1,13 +1,12 @@
 package com.tushar.todolist
-
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.app.AlarmManager
-import android.app.MediaRouteButton
 import android.app.PendingIntent
-import android.content.AbstractThreadedSyncAdapter
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -30,6 +29,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
+            }
+        }
 
         timePicker=findViewById(R.id.timePicker)
         periodSpinner=findViewById(R.id.periodSpinner)
@@ -62,18 +66,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun setReminder(task: Task){
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, ReminderReceiver::class.java)
         intent.putExtra("taskName", task.name)
-        val pendingIntent = PendingIntent.getBroadcast(this, task.id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getBroadcast(this, task.id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, task.hour)
             set(Calendar.MINUTE, task.minute)
             set(Calendar.SECOND, 0)
-        }
+            if (before(Calendar.getInstance())) {
+                add(Calendar.DATE, 1)  // Move to the next day if the time has already passed
 
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-    }
-    }
+            }
+           }
+    }}

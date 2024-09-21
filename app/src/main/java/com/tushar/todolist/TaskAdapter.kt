@@ -27,9 +27,14 @@ class TaskAdapter :
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task=taskList[position]
-        holder.taskName.text=task.name
-        holder.taskTime.text="$(task.hour):$(task.minute)"
-        holder.taskPeriod.text=task.period
+        val hour = if (task.hour == 0) 12 else if (task.hour > 12) task.hour - 12 else task.hour
+        val minute = String.format("%02d", task.minute) // Ensures two digits for minute (e.g., 08:05)
+        val period = if (task.hour >= 12) "PM" else "AM"
+
+        holder.taskTime.text = String.format("%02d:%s %s", hour, minute, period)
+
+        holder.taskName.text = task.name
+        holder.taskPeriod.text = task.period
     }
     override fun getItemCount(): Int {
         return taskList.size
