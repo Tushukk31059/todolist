@@ -11,10 +11,9 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
-class ReminderReceiver: BroadcastReceiver() {
+class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         val taskName = intent?.getStringExtra("taskName") ?: "Task"
-        Log.d("ReminderReceiver", "Reminder triggered for task: $taskName")
 
         // Create the notification channel (for Android 8.0 and above)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -36,9 +35,9 @@ class ReminderReceiver: BroadcastReceiver() {
             context, 0, openAppIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Build the notification
+        // Build the notification with custom icon
         val notificationBuilder = NotificationCompat.Builder(context, "taskReminderChannel")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)  // Add your notification icon here
+            .setSmallIcon(R.drawable.ic_notification)  // Your custom notification icon
             .setContentTitle("Task Reminder")
             .setContentText("Don't forget: $taskName")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
