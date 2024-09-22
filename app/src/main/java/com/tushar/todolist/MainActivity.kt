@@ -69,9 +69,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setReminder(task: Task){
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, ReminderReceiver::class.java)
-        intent.putExtra("taskName", task.name)
-        val pendingIntent = PendingIntent.getBroadcast(this, task.id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val intent = Intent(this, ReminderReceiver::class.java).apply {
+            putExtra("taskName", task.name)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(this,
+            task.id, intent, PendingIntent.FLAG_UPDATE_CURRENT or
+                    PendingIntent.FLAG_IMMUTABLE)
 
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, task.hour)
@@ -82,4 +85,18 @@ class MainActivity : AppCompatActivity() {
 
             }
            }
-    }}
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent
+        )
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1001) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
