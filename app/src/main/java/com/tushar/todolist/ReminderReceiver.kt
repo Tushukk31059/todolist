@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
@@ -22,6 +21,7 @@ class ReminderReceiver : BroadcastReceiver() {
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(channelId, channelName, importance).apply {
                 description = "Channel for task reminders"
+                setSound(null, null)
             }
 
             val notificationManager: NotificationManager =
@@ -29,24 +29,32 @@ class ReminderReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Create an intent to launch the app when the notification is clicked
-        val openAppIntent = Intent(context, MainActivity::class.java)
+        // Create an intent to launch the AlarmActivity (full-screen activity)
+        val openAppIntent = Intent(context, AlarmActivity::class.java)
+        openAppIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent = PendingIntent.getActivity(
             context, 0, openAppIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Build the notification with custom icon
+        // Show Notification with an alarm sound
+        val alarmSound = android.net.Uri.parse("android.resource://${context.packageName}/raw/alarm_sound")
         val notificationBuilder = NotificationCompat.Builder(context, "taskReminderChannel")
-            .setSmallIcon(R.drawable.ic_notification)  // Your custom notification icon
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("Task Reminder")
             .setContentText("Don't forget: $taskName")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)  // Dismiss the notification after the user clicks on it
+            .setSound(alarmSound)
+            .setAutoCancel(true)
 
         // Show the notification
         with(NotificationManagerCompat.from(context)) {
             notify(1001, notificationBuilder.build())  // Ensure the ID is unique for each notification
         }
+        // Trigger the full-screen AlarmActivity (important)
+        val fullScreenIntent = Intent(context, AlarmActivity::class.java)
+        fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        fullScreenIntent.putExtra("taskName", taskName)
+        context.startActivity(fullScreenIntent)  // Explicitly start the activity here
+
     }
 }
