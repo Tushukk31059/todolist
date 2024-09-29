@@ -85,6 +85,12 @@ class MainActivity : AppCompatActivity() {
 
             }
            }
+        // Acquire a wake lock to ensure the alarm works even in the background
+        val powerManager = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+        val wakeLock = powerManager.newWakeLock(android.os.PowerManager.PARTIAL_WAKE_LOCK, "ToDoListApp::AlarmWakeLock")
+        wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/)  // Wake lock will automatically release after 10 minutes
+
+
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent
         )
