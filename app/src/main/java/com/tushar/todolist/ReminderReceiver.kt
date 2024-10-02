@@ -49,20 +49,23 @@ class ReminderReceiver : BroadcastReceiver() {
             context, 0, fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        context.startActivity(fullScreenIntent)
 
+        context.startActivity(fullScreenIntent)
         // Choose a default alarm sound or specify a custom one
         val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         // Build the notification
-        val notificationBuilder = NotificationCompat.Builder(context, "taskReminderChannel")
+        val notificationBuilder = NotificationCompat.Builder(context,
+            "taskReminderChannel")
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("Task Reminder")
             .setContentText("Don't forget: $taskName")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setSound(alarmSound)
             .setAutoCancel(true)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setFullScreenIntent(pendingIntent, true) // Important for full-screen alarm
 
 
