@@ -21,7 +21,7 @@ class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         val taskName = intent?.getStringExtra("taskName") ?: "Task"
 
-        // Create the notification channel (for Android 8.0 and above)
+        // Create the notification channel 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelId = "taskReminderChannel"
             val channelName = "Task Reminder"
@@ -36,7 +36,7 @@ class ReminderReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Prepare the intent to launch the AlarmActivity (full-screen activity)
+        //intent to launch the AlarmActivity (full-screen activity)
         val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TASK or
@@ -51,7 +51,7 @@ class ReminderReceiver : BroadcastReceiver() {
         )
         context.startActivity(fullScreenIntent)
 
-        // Choose a default alarm sound or specify a custom one
+        //  alarm sound
         val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
