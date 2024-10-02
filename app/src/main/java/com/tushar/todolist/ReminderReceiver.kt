@@ -38,14 +38,18 @@ class ReminderReceiver : BroadcastReceiver() {
 
         // Prepare the intent to launch the AlarmActivity (full-screen activity)
         val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or
+                    Intent.FLAG_ACTIVITY_NO_USER_ACTION
             putExtra("taskName", taskName) // Pass task name
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context, 0, fullScreenIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
+        context.startActivity(fullScreenIntent)
 
         // Choose a default alarm sound or specify a custom one
         val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
