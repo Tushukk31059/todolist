@@ -45,12 +45,11 @@ class ReminderReceiver : BroadcastReceiver() {
             putExtra("taskName", taskName) // Pass task name
         }
 
-        val pendingIntent = PendingIntent.getActivity(
+        val fullScreenPendingIntent = PendingIntent.getActivity(
             context, 0, fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        context.startActivity(fullScreenIntent)
         // Choose a default alarm sound or specify a custom one
         val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -66,8 +65,8 @@ class ReminderReceiver : BroadcastReceiver() {
             .setAutoCancel(true)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setFullScreenIntent(pendingIntent, true) // Important for full-screen alarm
-
+            .setFullScreenIntent(fullScreenPendingIntent, true) // Important for full-screen alarm
+            .setContentIntent(fullScreenPendingIntent)
 
         // Show the notification
         with(NotificationManagerCompat.from(context)) {
@@ -76,14 +75,7 @@ class ReminderReceiver : BroadcastReceiver() {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return
+               return
             }
             notify(1001, notificationBuilder.build())  // Ensure the ID is unique for each notification
         }
