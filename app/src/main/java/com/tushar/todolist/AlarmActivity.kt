@@ -1,9 +1,5 @@
 package com.tushar.todolist
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
@@ -11,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.Button
-import android.widget.Toast
 
 class AlarmActivity : AppCompatActivity() {
     private lateinit var ringtone: Ringtone
@@ -44,26 +39,7 @@ class AlarmActivity : AppCompatActivity() {
         val snoozeButton: Button = findViewById(R.id.snoozeButton)
         snoozeButton.setOnClickListener {
             // Implement snooze functionality (e.g., reschedule the alarm)
-
             ringtone.stop()
-
-            // Reschedule the alarm for 2 minutes later
-            val snoozeTimeInMillis = 2 * 60 * 1000L  // 2 minutes in milliseconds
-
-            val snoozeIntent = Intent(this, ReminderReceiver::class.java).apply {
-                putExtra("taskName", intent.getStringExtra("taskName"))  // Pass task name for snooze notification
-            }
-
-            val snoozePendingIntent = PendingIntent.getBroadcast(
-                this, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-
-            // Schedule the snooze alarm using AlarmManager
-            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val snoozeTime = System.currentTimeMillis() + snoozeTimeInMillis
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, snoozeTime, snoozePendingIntent)
-            Toast.makeText(this,"Alarm Snoozed For 2 Minutes",Toast.LENGTH_LONG).show()
-
             finish()
         }
     }
